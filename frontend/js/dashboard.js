@@ -29,8 +29,9 @@ class Dashboard {
         try {
             console.log('🔍 Verificando estado del sistema...');
             
-            // Verificar estado de la API
-            const healthResponse = await fetch(`${window.API_BASE}/health`);
+            // Verificar estado de la API (con cache-busting)
+            const timestamp = new Date().getTime();
+            const healthResponse = await fetch(`${window.API_BASE}/health?t=${timestamp}`);
             const healthData = await healthResponse.json();
             
             this.updateSystemStatus('api-status', healthData.ok ? 'En Línea' : 'Con Problemas', healthData.ok ? 'online' : 'error');
@@ -45,7 +46,7 @@ class Dashboard {
 
             // Verificar estado ML
             try {
-                const mlResponse = await fetch(`${window.API_BASE}/ml-status`);
+                const mlResponse = await fetch(`${window.API_BASE}/ml-status?t=${timestamp}`);
                 const mlData = await mlResponse.json();
                 
                 const mlStatus = mlData.ok && mlData.model_exists ? 'Operativo' : 'No Disponible';
