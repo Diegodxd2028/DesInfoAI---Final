@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analizar Noticia - DesinfoApp | Detector de Fake News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<style>
+    /* Estilos adicionales para analysis.html */
+    .char-count {
+        font-weight: bold;
+        margin-left: 0.5rem;
+    }
+    
+    .char-count.text-false { color: #ef4444; }
+    .char-count.text-doubtful { color: #f59e0b; }
+    .char-count.text-credible { color: #10b981; }
+
+    /* Progreso del análisis */
+    .progress-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .progress-step {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 10px;
+        opacity: 0.6;
+        transition: all 0.3s ease;
+    }
+
+    .progress-step.active {
+        opacity: 1;
+        border-color: var(--primary-color);
+        background: var(--bg-secondary);
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-secondary);
+        color: var(--text-muted);
+    }
+
+    .progress-step.active .step-icon {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .step-info {
+        flex: 1;
+    }
+
+    .step-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .step-description {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* Resultados */
+    .analysis-result {
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .analysis-result.result-credible {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        border: 2px solid #10b981;
+    }
+
+    .analysis-result.result-doubtful {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border: 2px solid #f59e0b;
+    }
+
+    .analysis-result.result-false {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        border: 2px solid #ef4444;
+    }
+
+    .analysis-result.result-neutral {
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        border: 2px solid #6b7280;
+    }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .result-icon {
+        font-size: 3rem;
+    }
+
+    .result-credible .result-icon { color: #10b981; }
+    .result-doubtful .result-icon { color: #f59e0b; }
+    .result-false .result-icon { color: #ef4444; }
+    .result-neutral .result-icon { color: #6b7280; }
+
+    .result-main {
+        text-align: center;
+    }
+
+    .result-score {
+        font-size: 3rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .result-label {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .progress-container {
+        margin: 2rem 0;
+    }
+
+    .progress-bar {
+        height: 20px;
+        background: var(--bg-secondary);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 1s ease-in-out;
+    }
+
+    .progress-fill.result-credible { background: #10b981; }
+    .progress-fill.result-doubtful { background: #f59e0b; }
+    .progress-fill.result-false { background: #ef4444; }
+    .progress-fill.result-neutral { background: #6b7280; }
+
+    .progress-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    .result-meta {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* Utilidad */
+    .usefulness-section {
+        background: var(--bg-secondary);
+        padding: 2rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+    }
+
+    .usefulness-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .usefulness-header i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .usefulness-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .usefulness-feedback {
+        background: var(--bg-primary);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    /* Detalles técnicos */
+    .technical-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .technical-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .technical-item label {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .technical-item span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* Métricas */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .metric-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 8px;
+    }
+
+    .metric-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .result-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .result-meta {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .usefulness-buttons {
+            flex-direction: column;
+        }
+        
+        .technical-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    /* Sistema de Alertas Mejorado */
+    .alert-system {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .alert {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+        transform: translateX(400px);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .alert.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .alert-success {
+        border-left-color: #10b981;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    }
+
+    .alert-error {
+        border-left-color: #ef4444;
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    }
+
+    .alert-warning {
+        border-left-color: #f59e0b;
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    }
+
+    .alert-info {
+        border-left-color: #3b82f6;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    }
+
+    .alert-content {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem 1rem 1rem;
+        gap: 1rem;
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .alert-success .alert-icon { color: #10b981; }
+    .alert-error .alert-icon { color: #ef4444; }
+    .alert-warning .alert-icon { color: #f59e0b; }
+    .alert-info .alert-icon { color: #3b82f6; }
+
+    .alert-message {
+        flex: 1;
+    }
+
+    .alert-message strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .alert-message span {
+        font-size: 0.85rem;
+        color: #374151;
+        line-height: 1.4;
+    }
+
+    .alert-close {
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .alert-close:hover {
+        background: rgba(0,0,0,0.1);
+        color: #374151;
+    }
+
+    /* Para móviles */
+    @media (max-width: 768px) {
+        .alert-system {
+            left: 20px;
+            right: 20px;
+            width: auto;
+        }
+        
+        .alert-content {
+            padding: 0.75rem 1rem 0.75rem 0.75rem;
+        }
+    }
+</style>
+<body>
+    <div id="alert-container"></div>
+    <div class="app-container">
+        <!-- Sidebar Épico -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>DesinfoApp</span>
+                        <span class="logo-subtitle">Detector de Fake News</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación Principal</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">
+                                <i class="fas fa-home nav-icon"></i>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analysis.html" class="nav-link active">
+                                <i class="fas fa-search nav-icon"></i>
+                                <span class="nav-text">Analizar Noticia</span>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="history.html" class="nav-link">
+                                <i class="fas fa-history nav-icon"></i>
+                                <span class="nav-text">Historial</span>
+                                <span class="nav-badge" id="history-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comparison.html" class="nav-link">
+                                <i class="fas fa-balance-scale nav-icon"></i>
+                                <span class="nav-text">Comparar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Administración</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="datasets.html" class="nav-link">
+                                <i class="fas fa-database nav-icon"></i>
+                                <span class="nav-text">Datasets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="calibration.html" class="nav-link">
+                                <i class="fas fa-sliders-h nav-icon"></i>
+                                <span class="nav-text">Calibración</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="system-status-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Estado del Sistema</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header Profesional -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <nav class="breadcrumb">
+                            <div class="breadcrumb-item">
+                                <a href="index.html" class="breadcrumb-link">Dashboard</a>
+                            </div>
+                            <div class="breadcrumb-item active">
+                                Analizar Noticia
+                            </div>
+                        </nav>
+                        <h1 class="page-title">Analizar Noticia</h1>
+                        <p class="page-subtitle">Verifique la autenticidad de noticias usando IA avanzada</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="mobile-menu-btn desktop-only">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name">Usuario</span>
+                                <span class="user-role">Analista</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenido de Análisis -->
+            <div class="content-wrapper">
+                <!-- Estado del Sistema para Análisis -->
+                <div class="card mb-6">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon checking">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">API Backend</div>
+                                        <div class="status-value" id="api-status-analysis">Conectando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon checking">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">ML Local</div>
+                                        <div class="status-value" id="ml-status-analysis">Verificando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon checking">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">Groq LLaMA</div>
+                                        <div class="status-value" id="llm-status-analysis">Verificando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon online">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">Base de Datos</div>
+                                        <div class="status-value">Lista</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-8 col-md-12">
+                        <!-- Formulario de Análisis -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-newspaper"></i>
+                                    Ingresar Noticia para Análisis
+                                </h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm btn-outline" id="clear-form">
+                                        <i class="fas fa-eraser"></i> Limpiar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline" id="preview-btn">
+                                        <i class="fas fa-eye"></i> Vista Previa
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- FORMULARIO SIN ETIQUETA FORM PARA EVITAR ENVÍO -->
+                                <div id="analysis-container">
+                                    <div class="form-group">
+                                        <label for="newsSource" class="form-label">
+                                            <i class="fas fa-font"></i>
+                                            Fuente / Medio
+                                        </label>
+                                        <input type="text" id="newsSource" class="form-control" 
+                                               placeholder="Ej: Diario de Huancayo, CNN, BBC..." required>
+                                        <div class="form-help">Ingrese el nombre del medio o fuente de la noticia</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="newsTitle" class="form-label">
+                                            <i class="fas fa-heading"></i>
+                                            Título de la Noticia
+                                        </label>
+                                        <input type="text" id="newsTitle" class="form-control" 
+                                               placeholder="Ej: Descubren nuevo planeta habitable..." required>
+                                        <div class="form-help">El título debe ser exacto como aparece en la noticia</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="newsContent" class="form-label">
+                                            <i class="fas fa-align-left"></i>
+                                            Cuerpo de la Noticia
+                                            <span class="char-counter">
+                                                Caracteres: <span id="charCount">0</span>
+                                            </span>
+                                        </label>
+                                        <textarea id="newsContent" class="form-control" rows="8" 
+                                                  placeholder="Pegue aquí el contenido completo de la noticia..." required></textarea>
+                                        <div class="form-help">
+                                            Mínimo 50 caracteres para un análisis básico. Incluya párrafos completos para mejor precisión.
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="newsUrl" class="form-label">
+                                            <i class="fas fa-link"></i>
+                                            URL de la Noticia (Opcional)
+                                        </label>
+                                        <input type="url" id="newsUrl" class="form-control" 
+                                               placeholder="https://ejemplo.com/noticia">
+                                        <div class="form-help">Enlace directo a la noticia para referencia</div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <!-- BOTÓN CON type="button" PARA EVITAR ENVÍO -->
+                                        <button type="button" class="btn btn-primary btn-lg" id="analyze-btn">
+                                            <i class="fas fa-search"></i>
+                                            Analizar Noticia
+                                        </button>
+                                        <button type="button" class="btn btn-outline" id="save-draft">
+                                            <i class="fas fa-save"></i>
+                                            Guardar Borrador
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progreso del Análisis -->
+                        <div class="card mt-6" id="progress-card" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    Procesando Análisis
+                                </h3>
+                                <div class="card-actions">
+                                    <span id="elapsed-time">0s</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress-steps">
+                                    <div class="progress-step" id="step-1">
+                                        <div class="step-icon">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <div class="step-title">Enviando datos</div>
+                                            <div class="step-description">Preparando noticia para análisis</div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-step" id="step-2">
+                                        <div class="step-icon">
+                                            <i class="fas fa-brain"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <div class="step-title">Groq LLaMA 3.1</div>
+                                            <div class="step-description">Análisis semántico con IA</div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-step" id="step-3">
+                                        <div class="step-icon">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <div class="step-title">ML Local</div>
+                                            <div class="step-description">Clasificación con modelo entrenado</div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-step" id="step-4">
+                                        <div class="step-icon">
+                                            <i class="fas fa-cogs"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <div class="step-title">Combinando Resultados</div>
+                                            <div class="step-description">Integrando análisis múltiples</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resultados del Análisis -->
+                        <div class="card mt-6" id="results-section" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Resultados del Análisis
+                                </h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm btn-outline" id="toggle-technical">
+                                        <i class="fas fa-eye"></i> Detalles Técnicos
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Resultado Principal -->
+                                <div class="result-main mb-6">
+                                    <div id="analysis-result">
+                                        <!-- Resultado se carga dinámicamente -->
+                                    </div>
+                                </div>
+
+                                <!-- Explicación -->
+                                <div class="result-explanation mb-6">
+                                    <h4 class="section-title">
+                                        <i class="fas fa-info-circle"></i>
+                                        Explicación del Resultado
+                                    </h4>
+                                    <div id="explanation-result">
+                                        <!-- Explicación se carga dinámicamente -->
+                                    </div>
+                                </div>
+
+                                <!-- Sección de Feedback -->
+                                <div class="feedback-section mb-6" id="feedback-section">
+                                    <!-- Se carga dinámicamente -->
+                                </div>
+
+                                <!-- Detalles Técnicos -->
+                                <div class="technical-details" id="technical-details" style="display: none;">
+                                    <h4 class="section-title">
+                                        <i class="fas fa-cogs"></i>
+                                        Detalles Técnicos
+                                    </h4>
+                                    <div id="technical-content">
+                                        <!-- Detalles técnicos se cargan dinámicamente -->
+                                    </div>
+                                </div>
+
+                                <!-- Acciones Rápidas -->
+                                <div class="quick-actions-row">
+                                    <button class="btn btn-outline" id="save-analysis">
+                                        <i class="fas fa-bookmark"></i> Guardar Análisis
+                                    </button>
+                                    <button class="btn btn-outline" id="export-result">
+                                        <i class="fas fa-download"></i> Exportar Resultado
+                                    </button>
+                                    <button class="btn btn-outline" id="compare-later">
+                                        <i class="fas fa-balance-scale"></i> Comparar Más Tarde
+                                    </button>
+                                    <button class="btn btn-outline" id="new-analysis">
+                                        <i class="fas fa-plus"></i> Nuevo Análisis
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-md-12">
+                        <!-- Guía de Análisis -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-lightbulb"></i>
+                                    Guía de Análisis
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="guide-list">
+                                    <div class="guide-item">
+                                        <div class="guide-icon credible">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="guide-content">
+                                            <strong>Noticias Creíbles (70-100%)</strong>
+                                            <p>Fuentes verificables, datos coherentes, lenguaje neutral</p>
+                                        </div>
+                                    </div>
+                                    <div class="guide-item">
+                                        <div class="guide-icon doubtful">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        </div>
+                                        <div class="guide-content">
+                                            <strong>Noticias Dudosas (40-69%)</strong>
+                                            <p>Falta de fuentes, lenguaje sensacionalista, datos no verificados</p>
+                                        </div>
+                                    </div>
+                                    <div class="guide-item">
+                                        <div class="guide-icon false">
+                                            <i class="fas fa-times-circle"></i>
+                                        </div>
+                                        <div class="guide-content">
+                                            <strong>Noticias Falsas (0-39%)</strong>
+                                            <p>Contradicciones evidentes, fuentes no confiables, datos inventados</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas en Tiempo Real -->
+                        <div class="card mt-6">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Métricas del Sistema
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="metrics-grid">
+                                    <div class="metric-item">
+                                        <div class="metric-label">Análisis Totales</div>
+                                        <div class="metric-value" id="total-analyses-metric">0</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-label">Precisión Promedio</div>
+                                        <div class="metric-value" id="avg-accuracy-metric">0%</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-label">Tiempo Promedio</div>
+                                        <div class="metric-value" id="avg-time-metric">0s</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-label">Fake News Detectadas</div>
+                                        <div class="metric-value" id="fake-detected-metric">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tips para Mejor Análisis -->
+                        <div class="card mt-6">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-tips"></i>
+                                    Tips para Mejor Precisión
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <ul class="tips-list">
+                                    <li>
+                                        <i class="fas fa-check"></i>
+                                        Incluya el título exacto
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check"></i>
+                                        Pegue contenido completo
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check"></i>
+                                        Especifique la fuente original
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check"></i>
+                                        Evite textos muy cortos
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check"></i>
+                                        Incluya párrafos contextuales
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Acciones Rápidas -->
+                        <div class="card mt-6">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-bolt"></i>
+                                    Acciones Rápidas
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-actions-vertical">
+                                    <a href="history.html" class="btn btn-outline w-100 mb-3">
+                                        <i class="fas fa-history"></i>
+                                        Ver Historial
+                                    </a>
+                                    <a href="comparison.html" class="btn btn-outline w-100 mb-3">
+                                        <i class="fas fa-balance-scale"></i>
+                                        Comparar Análisis
+                                    </a>
+                                    <button class="btn btn-outline w-100" id="feedback-btn">
+                                        <i class="fas fa-comment"></i>
+                                        Enviar Feedback General
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Vista Previa -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 class="modal-title">Vista Previa de la Noticia</h3>
+                <button class="modal-close" id="close-preview">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="preview-content">
+                    <div class="preview-section">
+                        <h4>Fuente</h4>
+                        <p id="preview-source">-</p>
+                    </div>
+                    <div class="preview-section">
+                        <h4>Título</h4>
+                        <p id="preview-title">-</p>
+                    </div>
+                    <div class="preview-section">
+                        <h4>Contenido</h4>
+                        <div class="content-preview" id="preview-content">
+                            <p class="text-muted">No hay contenido para mostrar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="close-preview">Cerrar</button>
+                <button class="btn btn-primary" id="analyze-from-preview">
+                    <i class="fas fa-search"></i> Analizar Esta Noticia
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Feedback -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Corregir Análisis</h3>
+                <button class="modal-close" id="cancel-feedback">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="feedbackForm">
+                    <input type="hidden" id="feedback-analysis-id">
+                    <input type="hidden" id="feedback-verdict">
+                    <input type="hidden" id="feedback-score">
+                    
+                    <div class="form-group">
+                        <label class="form-label">¿Cuál es el veredicto correcto?</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="correct-verdict" value="verdadera" required>
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Verdadera / Creíble</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="correct-verdict" value="falsa">
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Falsa / Engañosa</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="correct-verdict" value="dudosa">
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Dudosa / Incierta</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correct-score" class="form-label">Puntaje correcto (0-100)</label>
+                        <input type="number" id="correct-score" class="form-control" min="0" max="100" value="50">
+                        <div class="form-help">¿Qué puntaje consideras más adecuado?</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user-feedback" class="form-label">Comentarios para mejorar</label>
+                        <textarea id="user-feedback" class="form-control" rows="3" 
+                                  placeholder="¿Qué podría mejorar el sistema? ¿Por qué el análisis fue incorrecto?"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-feedback">Cancelar</button>
+                <button class="btn btn-primary" id="submit-feedback">
+                    <i class="fas fa-paper-plane"></i> Enviar Corrección
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Alertas -->
+    <div class="alert-system" id="alertSystem"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/analysis-permanent.js"></script>
+</body>
+</html>

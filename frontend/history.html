@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial - DesinfoApp | Detector de Fake News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        /* Estilos adicionales para las mejoras de interfaz */
+        /* Mejoras para la tabla de historial - Separación entre noticias */
+.data-table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin: -8px 0;
+}
+
+.data-table tbody tr {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+}
+
+.data-table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.data-table td {
+    padding: 1.25rem 1rem;
+    border: none;
+    vertical-align: top;
+}
+
+.data-table td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-left: 4px solid transparent;
+}
+
+.data-table td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* Colores de borde izquierdo según veredicto */
+.data-table tr[data-verdict="verdadera"] td:first-child,
+.data-table tr[data-verdict="real"] td:first-child,
+.data-table tr[data-verdict="confiable"] td:first-child {
+    border-left-color: #10b981;
+}
+
+.data-table tr[data-verdict="dudosa"] td:first-child {
+    border-left-color: #f59e0b;
+}
+
+.data-table tr[data-verdict="falsa"] td:first-child {
+    border-left-color: #ef4444;
+}
+
+.data-table tr[data-verdict="no_verificable"] td:first-child,
+.data-table tr[data-verdict="desconocido"] td:first-child {
+    border-left-color: #6b7280;
+}
+
+/* Mejorar la visualización del contenido */
+.data-table .content-preview {
+    max-height: 3.6em;
+    overflow: hidden;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.data-table .source-info {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.data-table .date-info {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Estados de puntaje mejorados */
+.score-display {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.score-display.high { color: #10b981; }
+.score-display.medium { color: #f59e0b; }
+.score-display.low { color: #ef4444; }
+
+/* Badges de veredicto mejorados */
+.verdict-badge-table {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.verdict-badge-table.credible {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.verdict-badge-table.doubtful {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.verdict-badge-table.false {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.verdict-badge-table.no-verificable {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Separadores visuales adicionales */
+.table-row-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    margin: 0.5rem 0;
+}
+
+/* Mejorar el responsive */
+@media (max-width: 768px) {
+    .data-table {
+        border-spacing: 0 12px;
+    }
+    
+    .data-table td {
+        padding: 1rem 0.75rem;
+    }
+    
+    .data-table .content-preview {
+        -webkit-line-clamp: 2;
+        max-height: 2.4em;
+    }
+}
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .controls-summary {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .controls-grid-enhanced {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .control-group {
+            background: var(--bg-secondary);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .control-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .control-label i {
+            color: var(--primary-color);
+        }
+
+        /* Búsqueda Mejorada */
+        .search-group {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+        }
+
+        .search-box-enhanced {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box-enhanced input {
+            flex: 1;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-box-enhanced input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-btn, .clear-btn {
+            position: absolute;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+
+        .search-btn {
+            left: 0.75rem;
+        }
+
+        .clear-btn {
+            right: 0.75rem;
+        }
+
+        .search-btn:hover, .clear-btn:hover {
+            color: var(--primary-color);
+        }
+
+        /* Filtros Mejorados */
+        .filter-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .filter-btn.enhanced {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .filter-btn.enhanced:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn.enhanced.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .filter-btn.enhanced.credible.active {
+            border-color: #10b981;
+            background: #10b981;
+        }
+
+        .filter-btn.enhanced.doubtful.active {
+            border-color: #f59e0b;
+            background: #f59e0b;
+        }
+
+        .filter-btn.enhanced.false.active {
+            border-color: #ef4444;
+            background: #ef4444;
+        }
+
+        .filter-btn.enhanced.no-verificable.active {
+            border-color: #6b7280;
+            background: #6b7280;
+        }
+
+        .filter-count {
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 2rem;
+        }
+
+        .filter-btn.enhanced.active .filter-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Botones de Ordenamiento Mejorados */
+        .actions-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .sort-buttons, .export-buttons {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn.enhanced, .export-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .sort-btn.enhanced:hover, .export-btn:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .sort-btn.enhanced.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .export-btn.csv {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .export-btn.csv:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        .export-btn.json {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .export-btn.json:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* Filtros Activos */
+        .active-filters {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .active-filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .clear-all-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .active-filters-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Tabla Mejorada */
+        .score-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin: 0 auto;
+        }
+
+        .score-circle.high {
+            background: #dcfce7;
+            color: #166534;
+            border: 2px solid #bbf7d0;
+        }
+
+        .score-circle.medium {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fde68a;
+        }
+
+        .score-circle.low {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #fecaca;
+        }
+
+        .latency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-view {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-compare {
+            background: #f0f9ff;
+            color: #0369a1;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.1);
+        }
+
+        /* Estados Vacíos Mejorados */
+        .empty-state-cell {
+            padding: 3rem !important;
+        }
+
+        .empty-content {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-content i {
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-content h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Detalles del Modal Mejorados */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-card h4 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .source-tag, .method-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .score-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .score-badge.high {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .score-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .score-badge.low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .verdict-tag {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .verdict-tag.credible {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .verdict-tag.doubtful {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .verdict-tag.false {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .verdict-tag.no-verificable {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .content-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .content-field {
+            margin-bottom: 1.5rem;
+        }
+
+        .content-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-field label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .content-text {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            line-height: 1.5;
+        }
+
+        .content-text.scrollable {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .explanation-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .controls-grid-enhanced {
+                gap: 1rem;
+            }
+            
+            .filter-buttons-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .actions-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .sort-buttons, .export-buttons {
+                justify-content: center;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Épico -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>DesinfoApp</span>
+                        <span class="logo-subtitle">Detector de Fake News</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación Principal</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">
+                                <i class="fas fa-home nav-icon"></i>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analysis.html" class="nav-link">
+                                <i class="fas fa-search nav-icon"></i>
+                                <span class="nav-text">Analizar Noticia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="history.html" class="nav-link active">
+                                <i class="fas fa-history nav-icon"></i>
+                                <span class="nav-text">Historial</span>
+                                <div class="nav-indicator"></div>
+                                <span class="nav-badge" id="history-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comparison.html" class="nav-link">
+                                <i class="fas fa-balance-scale nav-icon"></i>
+                                <span class="nav-text">Comparar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Administración</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="datasets.html" class="nav-link">
+                                <i class="fas fa-database nav-icon"></i>
+                                <span class="nav-text">Datasets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="calibration.html" class="nav-link">
+                                <i class="fas fa-sliders-h nav-icon"></i>
+                                <span class="nav-text">Calibración</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+        
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="system-status-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Estado del Sistema</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header Profesional -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <nav class="breadcrumb">
+                            <div class="breadcrumb-item">
+                                <a href="index.html" class="breadcrumb-link">Dashboard</a>
+                            </div>
+                            <div class="breadcrumb-item active">
+                                Historial
+                            </div>
+                        </nav>
+                        <h1 class="page-title">Historial de Análisis</h1>
+                        <p class="page-subtitle">Revise y gestione todos los análisis realizados en el sistema</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="mobile-menu-btn desktop-only">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name">Usuario</span>
+                                <span class="user-role">Analista</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenido del Historial -->
+            <div class="content-wrapper">
+                <!-- Estadísticas Rápidas -->
+                <div class="row mb-6">
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="metric-value" id="stat-total">0</div>
+                            <div class="metric-label">Total Análisis</div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="metric-value" id="stat-credible">0</div>
+                            <div class="metric-label">Confiable <span id="stat-credible-pct">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="metric-value" id="stat-doubtful">0</div>
+                            <div class="metric-label">Dudosa <span id="stat-doubtful-pct">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div class="metric-value" id="stat-false">0</div>
+                            <div class="metric-label">Falsa <span id="stat-false-pct">0%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles de Filtrado y Búsqueda - MEJORADO -->
+                <div class="card mb-6">
+                    <div class="card-body">
+                        <div class="controls-header">
+                            <h4 class="controls-title">
+                                <i class="fas fa-sliders-h"></i>
+                                Controles de Filtrado
+                            </h4>
+                            <div class="controls-summary" id="controls-summary">
+                                Mostrando todos los análisis
+                            </div>
+                        </div>
+
+                        <div class="controls-grid-enhanced">
+                            <!-- Búsqueda Avanzada -->
+                            <div class="control-group search-group">
+                                <label class="control-label">
+                                    <i class="fas fa-search"></i>
+                                    Búsqueda Avanzada
+                                </label>
+                                <div class="search-box-enhanced">
+                                    <input type="text" id="history-search" placeholder="Buscar en título, fuente, contenido...">
+                                    <button class="search-btn" id="search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <button class="clear-btn" id="clear-search" title="Limpiar búsqueda">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Filtros por Veredicto -->
+                            <div class="control-group filter-group">
+                                <label class="control-label">
+                                    <i class="fas fa-filter"></i>
+                                    Filtrar por Veredicto
+                                </label>
+                                <div class="filter-buttons-grid">
+                                    <button class="filter-btn enhanced active" id="filter-all" data-count="0">
+                                        <i class="fas fa-layer-group"></i>
+                                        <span>Todos</span>
+                                        <span class="filter-count">0</span>
+                                    </button>
+                                    <button class="filter-btn enhanced credible" id="filter-verdadera" data-count="0">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Confiable</span>
+                                        <span class="filter-count">0</span>
+                                    </button>
+                                    <button class="filter-btn enhanced doubtful" id="filter-dudosa" data-count="0">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <span>Dudosa</span>
+                                        <span class="filter-count">0</span>
+                                    </button>
+                                    <button class="filter-btn enhanced false" id="filter-falsa" data-count="0">
+                                        <i class="fas fa-times-circle"></i>
+                                        <span>Falsa</span>
+                                        <span class="filter-count">0</span>
+                                    </button>
+                                    <button class="filter-btn enhanced no-verificable" id="filter-no-verificable" data-count="0">
+                                        <i class="fas fa-question-circle"></i>
+                                        <span>No Verificable</span>
+                                        <span class="filter-count">0</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Ordenamiento y Acciones -->
+                            <div class="control-group actions-group">
+                                <div class="actions-row">
+                                    <div class="sort-section">
+                                        <label class="control-label">
+                                            <i class="fas fa-sort"></i>
+                                            Ordenar por
+                                        </label>
+                                        <div class="sort-buttons">
+                                            <button class="sort-btn enhanced active" id="sort-date">
+                                                <i class="fas fa-calendar"></i>
+                                                Fecha
+                                            </button>
+                                            <button class="sort-btn enhanced" id="sort-score">
+                                                <i class="fas fa-chart-line"></i>
+                                                Puntaje
+                                            </button>
+                                            <button class="sort-btn enhanced" id="sort-source">
+                                                <i class="fas fa-font"></i>
+                                                Fuente
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="export-section">
+                                        <label class="control-label">
+                                            <i class="fas fa-download"></i>
+                                            Exportar Datos
+                                        </label>
+                                        <div class="export-buttons">
+                                            <button class="export-btn csv" id="export-csv">
+                                                <i class="fas fa-file-csv"></i>
+                                                CSV
+                                            </button>
+                                            <button class="export-btn json" id="export-json">
+                                                <i class="fas fa-file-code"></i>
+                                                JSON
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filtros Activos -->
+                        <div class="active-filters" id="active-filters" style="display: none;">
+                            <div class="active-filters-header">
+                                <span>Filtros activos:</span>
+                                <button class="clear-all-btn" onclick="newsHistory.clearFilters()">
+                                    <i class="fas fa-times"></i>
+                                    Limpiar todo
+                                </button>
+                            </div>
+                            <div class="active-filters-list" id="active-filters-list">
+                                <!-- Filtros activos se muestran aquí -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado de Carga -->
+                <div id="history-loading" class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Cargando historial de análisis...</p>
+                </div>
+
+                <!-- Contenido del Historial -->
+                <div id="history-content" style="display: none;">
+                    <!-- Tabla de Historial -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-table"></i>
+                                Análisis Realizados
+                            </h3>
+                            <div class="card-actions">
+                                <span class="results-count" id="results-count">Mostrando 0 de 0 resultados</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="20%">Fuente y Fecha</th>
+                                            <th width="35%">Contenido</th>
+                                            <th width="10%">Confianza</th>
+                                            <th width="15%">Resultado</th>
+                                            <th width="10%">Rendimiento</th>
+                                            <th width="10%">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="history-tbody">
+                                        <!-- Los datos se cargan dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paginación -->
+                    <div class="pagination-container">
+                        <div class="pagination">
+                            <button class="btn btn-outline" id="prev-page" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                                Anterior
+                            </button>
+                            <span class="pagination-info" id="pagination-info">Página 1 de 1 · 0 elementos</span>
+                            <button class="btn btn-outline" id="next-page" disabled>
+                                Siguiente
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado Vacío -->
+                <div id="history-empty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3>No hay análisis en el historial</h3>
+                    <p>Realice su primer análisis para comenzar a llenar el historial</p>
+                    <div class="empty-actions">
+                        <a href="analysis.html" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Realizar Primer Análisis
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Detalles del Análisis -->
+    <div class="modal" id="item-details-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalles Completos del Análisis</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="item-details-content">
+                    <!-- Los detalles se cargan dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="document.getElementById('item-details-modal').classList.remove('show')">
+                    Cerrar
+                </button>
+                <button class="btn btn-primary" id="export-details">
+                    <i class="fas fa-download"></i> Exportar Detalles
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Alertas -->
+    <div class="alert-system" id="alertSystem"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/history.js"></script>
+</body>
+</html>

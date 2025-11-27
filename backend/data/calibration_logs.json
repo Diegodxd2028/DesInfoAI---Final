@@ -1,0 +1,454 @@
+[
+  {
+    "timestamp": "2025-11-20T15:25:18.089Z",
+    "total_analyses": 1,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  },
+  {
+    "timestamp": "2025-11-20T15:25:21.887Z",
+    "total_analyses": 1,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  },
+  {
+    "timestamp": "2025-11-21T05:35:37.768Z",
+    "total_analyses": 3,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  },
+  {
+    "timestamp": "2025-11-21T05:49:34.762Z",
+    "total_analyses": 3,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  },
+  {
+    "timestamp": "2025-11-21T06:16:02.128Z",
+    "total_analyses": 3,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  },
+  {
+    "timestamp": "2025-11-21T06:16:52.502Z",
+    "total_analyses": 4,
+    "calibrated_analyses": 1,
+    "calibration_rate": 25,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-21T06:17:20.215Z",
+    "total_analyses": 5,
+    "calibrated_analyses": 1,
+    "calibration_rate": 20,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:27:43.631Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 1,
+    "calibration_rate": 3.7,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:27:48.226Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 1,
+    "calibration_rate": 3.7,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:56:06.885Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 1,
+    "calibration_rate": 3.7,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:56:08.526Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 1,
+    "calibration_rate": 3.7,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:56:09.612Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 1,
+    "calibration_rate": 3.7,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:56:10.600Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 1,
+    "calibration_rate": 3.7,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T19:57:57.638Z",
+    "total_analyses": 27,
+    "calibrated_analyses": 5,
+    "calibration_rate": 18.52,
+    "average_accuracy": 69.28,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      },
+      {
+        "analysis_id": 1763872828726,
+        "original_score": 36,
+        "calibrated_score": 55.6,
+        "matches_found": 1,
+        "accuracy": 71
+      },
+      {
+        "analysis_id": 1763872862250,
+        "original_score": 31,
+        "calibrated_score": 52.6,
+        "matches_found": 1,
+        "accuracy": 68
+      },
+      {
+        "analysis_id": 1763891554249,
+        "original_score": 31,
+        "calibrated_score": 52.6,
+        "matches_found": 1,
+        "accuracy": 68
+      },
+      {
+        "analysis_id": 1763891588024,
+        "original_score": 31,
+        "calibrated_score": 52.6,
+        "matches_found": 1,
+        "accuracy": 68
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T22:30:54.998Z",
+    "total_analyses": 9,
+    "calibrated_analyses": 1,
+    "calibration_rate": 11.11,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T22:30:57.561Z",
+    "total_analyses": 9,
+    "calibrated_analyses": 1,
+    "calibration_rate": 11.11,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T22:30:58.694Z",
+    "total_analyses": 9,
+    "calibrated_analyses": 1,
+    "calibration_rate": 11.11,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T22:30:59.586Z",
+    "total_analyses": 9,
+    "calibrated_analyses": 1,
+    "calibration_rate": 11.11,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T22:31:00.696Z",
+    "total_analyses": 9,
+    "calibrated_analyses": 1,
+    "calibration_rate": 11.11,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-23T22:31:01.812Z",
+    "total_analyses": 9,
+    "calibrated_analyses": 1,
+    "calibration_rate": 11.11,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T04:49:54.509Z",
+    "total_analyses": 13,
+    "calibrated_analyses": 1,
+    "calibration_rate": 7.69,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T04:49:56.105Z",
+    "total_analyses": 13,
+    "calibrated_analyses": 1,
+    "calibration_rate": 7.69,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T06:35:47.059Z",
+    "total_analyses": 42,
+    "calibrated_analyses": 1,
+    "calibration_rate": 2.38,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T06:35:54.615Z",
+    "total_analyses": 42,
+    "calibrated_analyses": 1,
+    "calibration_rate": 2.38,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T06:35:56.087Z",
+    "total_analyses": 42,
+    "calibrated_analyses": 1,
+    "calibration_rate": 2.38,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T07:05:04.726Z",
+    "total_analyses": 47,
+    "calibrated_analyses": 1,
+    "calibration_rate": 2.13,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T07:05:06.049Z",
+    "total_analyses": 47,
+    "calibrated_analyses": 1,
+    "calibration_rate": 2.13,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T07:05:11.484Z",
+    "total_analyses": 47,
+    "calibrated_analyses": 1,
+    "calibration_rate": 2.13,
+    "average_accuracy": 73,
+    "results": [
+      {
+        "analysis_id": 1763705792277,
+        "original_score": 40,
+        "calibrated_score": 58,
+        "matches_found": 2,
+        "accuracy": 73
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-24T07:37:17.622Z",
+    "total_analyses": 50,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  },
+  {
+    "timestamp": "2025-11-24T08:08:08.222Z",
+    "total_analyses": 50,
+    "calibrated_analyses": 0,
+    "calibration_rate": 0,
+    "average_accuracy": 0,
+    "results": []
+  }
+]

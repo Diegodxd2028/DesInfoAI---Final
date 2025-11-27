@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datasets - DesinfoApp | Detector de Fake News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        /* Mejoras visuales para datasets */
+.drag-over {
+    border-color: #4f46e5 !important;
+    background-color: #f8fafc !important;
+}
+
+.dataset-type {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.type-labeled {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.type-unlabeled {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.accuracy-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.accuracy-good {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.accuracy-na {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.btn-action {
+    padding: 6px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-action:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.training-result-card {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.results-pre-container {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 15px;
+    border-radius: 6px;
+    margin-top: 10px;
+    overflow-x: auto;
+}
+
+.results-pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+}
+
+.status-value {
+    font-weight: 600;
+}
+
+.status-ready {
+    color: #059669;
+}
+
+.status-not-ready {
+    color: #dc2626;
+}
+        </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Épico -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>DesinfoApp</span>
+                        <span class="logo-subtitle">Detector de Fake News</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación Principal</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">
+                                <i class="fas fa-home nav-icon"></i>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analysis.html" class="nav-link">
+                                <i class="fas fa-search nav-icon"></i>
+                                <span class="nav-text">Analizar Noticia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="history.html" class="nav-link">
+                                <i class="fas fa-history nav-icon"></i>
+                                <span class="nav-text">Historial</span>
+                                <span class="nav-badge" id="history-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comparison.html" class="nav-link">
+                                <i class="fas fa-balance-scale nav-icon"></i>
+                                <span class="nav-text">Comparar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Administración</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="datasets.html" class="nav-link active">
+                                <i class="fas fa-database nav-icon"></i>
+                                <span class="nav-text">Datasets</span>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="calibration.html" class="nav-link">
+                                <i class="fas fa-sliders-h nav-icon"></i>
+                                <span class="nav-text">Calibración</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="system-status-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Estado del Sistema</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header Profesional -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <nav class="breadcrumb">
+                            <div class="breadcrumb-item">
+                                <a href="index.html" class="breadcrumb-link">Dashboard</a>
+                            </div>
+                            <div class="breadcrumb-item active">
+                                Datasets
+                            </div>
+                        </nav>
+                        <h1 class="page-title">Gestión de Datasets</h1>
+                        <p class="page-subtitle">Administre y entrene modelos con datasets personalizados</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="mobile-menu-btn desktop-only">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name">Usuario</span>
+                                <span class="user-role">Administrador</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenido de Datasets -->
+            <div class="content-wrapper">
+                <!-- Estadísticas de Datasets -->
+                <div class="row mb-6">
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="metric-value" id="total-datasets">0</div>
+                            <div class="metric-label">Datasets Totales</div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="metric-value" id="total-records">0</div>
+                            <div class="metric-label">Registros Totales</div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="metric-value" id="labeled-records">0</div>
+                            <div class="metric-label">Registros Etiquetados</div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-value" id="accuracy-improvement">0%</div>
+                            <div class="metric-label">Mejora de Precisión</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navegación por Tabs -->
+                <div class="tabs-navigation mb-6">
+                    <button class="tab-btn active" id="tab-upload">
+                        <i class="fas fa-upload"></i>
+                        Cargar Dataset
+                    </button>
+                    <button class="tab-btn" id="tab-manage">
+                        <i class="fas fa-cog"></i>
+                        Gestionar Datasets
+                    </button>
+                    <button class="tab-btn" id="tab-train">
+                        <i class="fas fa-robot"></i>
+                        Entrenar Modelo
+                    </button>
+                </div>
+
+                <!-- Sistema de Alertas -->
+                <div id="alert-container"></div>
+
+                <!-- Contenido de Tabs -->
+                <div class="tab-content active" id="upload-content">
+                    <!-- Carga de Dataset -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-upload"></i>
+                                Cargar Nuevo Dataset
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="upload-container">
+                                <div class="drop-zone" id="drop-zone">
+                                    <div class="drop-zone-content">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <h4>Arrastre y suelte su archivo aquí</h4>
+                                        <p>Formatos soportados: CSV, Excel (XLSX)</p>
+                                        <p class="text-muted">Tamaño máximo: 10MB</p>
+                                        <button class="btn btn-outline mt-3" id="browse-files">
+                                            <i class="fas fa-folder-open"></i>
+                                            Seleccionar Archivo
+                                        </button>
+                                    </div>
+                                    <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display: none;">
+                                </div>
+
+                                <div class="upload-progress" id="upload-progress" style="display: none;">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="upload-progress-bar"></div>
+                                    </div>
+                                    <div class="progress-text" id="upload-progress-text">Procesando...</div>
+                                </div>
+
+                                <div class="upload-requirements mt-6">
+                                    <h4>Requisitos del Dataset</h4>
+                                    <div class="requirements-grid">
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span><strong>CSV/Excel</strong> con codificación UTF-8</span>
+                                        </div>
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span>Columnas: <strong>titulo, fuente, cuerpo</strong></span>
+                                        </div>
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span>Columna opcional: <strong>etiqueta</strong> (real/falsa)</span>
+                                        </div>
+                                        <div class="requirement-item">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <span>Mínimo <strong>10 registros</strong> para entrenamiento</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="upload-actions mt-6">
+                                    <button class="btn btn-outline" id="download-template">
+                                        <i class="fas fa-download"></i>
+                                        Descargar Plantilla
+                                    </button>
+                                    <button class="btn btn-primary" id="validate-dataset">
+                                        <i class="fas fa-check"></i>
+                                        Validar Dataset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="manage-content">
+                    <!-- Gestión de Datasets -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-table"></i>
+                                Datasets Cargados
+                            </h3>
+                            <div class="card-actions">
+                                <div class="filter-group">
+                                    <button class="filter-btn active" id="filter-all-datasets">
+                                        Todos
+                                    </button>
+                                    <button class="filter-btn" id="filter-labeled">
+                                        Etiquetados
+                                    </button>
+                                    <button class="filter-btn" id="filter-unlabeled">
+                                        Sin Etiquetar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Tipo</th>
+                                            <th>Registros</th>
+                                            <th>Tamaño</th>
+                                            <th>Precisión</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="datasets-tbody">
+                                        <!-- Los datasets se cargan dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="train-content">
+                    <!-- Entrenamiento de Modelo -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-robot"></i>
+                                Entrenar Modelo ML
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="training-container">
+                                <div class="training-status mb-6">
+                                    <h4>Estado del Modelo</h4>
+                                    <div class="status-grid">
+                                        <div class="status-item">
+                                            <span class="status-label">Modelo Actual:</span>
+                                            <span class="status-value" id="model-status">Logistic Regression + TF-IDF</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span class="status-label">Último Entrenamiento:</span>
+                                            <span class="status-value" id="last-training">Nunca</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span class="status-label">Precisión Actual:</span>
+                                            <span class="status-value" id="current-accuracy">85%</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span class="status-label">Registros Disponibles:</span>
+                                            <span class="status-value" id="available-records">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="training-configuration mb-6">
+                                    <h4>Configuración del Entrenamiento</h4>
+                                    <div class="config-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Dataset para Entrenar</label>
+                                            <select class="form-select" id="training-dataset">
+                                                <option value="">Seleccionar dataset...</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Proporción Train/Test</label>
+                                            <select class="form-select" id="train-test-split">
+                                                <option value="0.8">80% Train - 20% Test</option>
+                                                <option value="0.7">70% Train - 30% Test</option>
+                                                <option value="0.6">60% Train - 40% Test</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Algoritmo</label>
+                                            <select class="form-select" id="ml-algorithm">
+                                                <option value="logistic">Regresión Logística</option>
+                                                <option value="random_forest">Random Forest</option>
+                                                <option value="svm">SVM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="training-progress" id="training-progress" style="display: none;">
+                                    <h4>Progreso del Entrenamiento</h4>
+                                    <div class="progress-bar large">
+                                        <div class="progress-fill" id="training-progress-bar"></div>
+                                    </div>
+                                    <div class="progress-text" id="training-progress-text">Iniciando entrenamiento...</div>
+                                </div>
+
+                                <div class="training-results" id="training-results">
+                                    <!-- Los resultados se cargan dinámicamente -->
+                                </div>
+
+                                <div class="training-actions">
+                                    <button class="btn btn-primary btn-lg" id="train-model">
+                                        <i class="fas fa-play"></i>
+                                        Iniciar Entrenamiento
+                                    </button>
+                                    <button class="btn btn-outline" id="evaluate-model">
+                                        <i class="fas fa-chart-bar"></i>
+                                        Evaluar Modelo Actual
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Sistema de Alertas -->
+    <div class="alert-system" id="alertSystem"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/datasets.js"></script>
+        <script src="js/auth.js"></script>
+</body>
+</html>

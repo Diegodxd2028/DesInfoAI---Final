@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DesinfoApp | Detector de Fake News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <style>
+    /* Variables de colores para el gráfico */
+    :root {
+        --credible-500: #10b981;
+        --credible-600: #059669;
+        --doubtful-500: #f59e0b;
+        --doubtful-600: #d97706;
+        --false-500: #ef4444;
+        --false-600: #dc2626;
+        --no-verificable-500: #6b7280;
+        --no-verificable-600: #4b5563;
+    }
+
+    /* Estados del sistema mejorados */
+    .status-value.online { color: #10b981; }
+    .status-value.warning { color: #f59e0b; }
+    .status-value.error { color: #ef4444; }
+    .status-value.checking { color: #6b7280; }
+
+    .system-status-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .status-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .status-icon.online {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .status-icon.warning {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-icon.error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .status-icon.checking {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .status-info {
+        flex: 1;
+    }
+
+    .status-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .status-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    /* Análisis recientes mejorados */
+    .recent-analysis-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.3s ease;
+    }
+
+    .recent-analysis-item:hover {
+        background: var(--bg-secondary);
+    }
+
+    .recent-analysis-item:last-child {
+        border-bottom: none;
+    }
+
+    .analysis-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .analysis-title {
+        font-weight: 500;
+        flex: 1;
+    }
+
+    .analysis-verdict {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .analysis-verdict.credible {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .analysis-verdict.doubtful {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .analysis-verdict.false {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .analysis-verdict.no-verificable {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    .analysis-details {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .analysis-source {
+        font-weight: 500;
+    }
+
+    /* Métricas mejoradas */
+    .metric-change {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .metric-change.positive {
+        color: #10b981;
+    }
+
+    .metric-change.negative {
+        color: #ef4444;
+    }
+
+    /* Estado de ML mejorado */
+    .ml-status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .ml-status-item:last-child {
+        border-bottom: none;
+    }
+
+    .ml-label {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .ml-value {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* Estados vacíos */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+    }
+
+    /* Gráfico responsivo */
+    .chart-container {
+        position: relative;
+        min-height: 300px;
+    }
+</style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Épico -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>DesinfoApp</span>
+                        <span class="logo-subtitle">Detector de Fake News</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación Principal</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link active">
+                                <i class="fas fa-home nav-icon"></i>
+                                <span class="nav-text">Dashboard</span>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analysis.html" class="nav-link">
+                                <i class="fas fa-search nav-icon"></i>
+                                <span class="nav-text">Analizar Noticia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="history.html" class="nav-link">
+                                <i class="fas fa-history nav-icon"></i>
+                                <span class="nav-text">Historial</span>
+                                <span class="nav-badge" id="history-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comparison.html" class="nav-link">
+                                <i class="fas fa-balance-scale nav-icon"></i>
+                                <span class="nav-text">Comparar</span>
+                                <span class="nav-badge">Nuevo</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Administración</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="datasets.html" class="nav-link">
+                                <i class="fas fa-database nav-icon"></i>
+                                <span class="nav-text">Datasets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="calibration.html" class="nav-link">
+                                <i class="fas fa-sliders-h nav-icon"></i>
+                                <span class="nav-text">Calibración</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="system-status-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Estado del Sistema</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header Profesional -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <nav class="breadcrumb">
+                            <div class="breadcrumb-item">
+                                <a href="index.html" class="breadcrumb-link">Dashboard</a>
+                            </div>
+                        </nav>
+                        <h1 class="page-title">Panel de Control</h1>
+                        <p class="page-subtitle">Resumen general del sistema de detección de fake news</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="mobile-menu-btn desktop-only">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name">Usuario</span>
+                                <span class="user-role">Analista</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenido del Dashboard -->
+            <div class="content-wrapper">
+                <!-- Estado del Sistema -->
+                <div class="card mb-6">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon online">
+                                        <i class="fas fa-server"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">API Backend</div>
+                                        <div class="status-value" id="api-status">Conectando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon checking">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">ML Local</div>
+                                        <div class="status-value" id="ml-status">Verificando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon checking">
+                                        <i class="fas fa-brain"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">Groq LLaMA</div>
+                                        <div class="status-value" id="llm-status">Verificando...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="system-status-item">
+                                    <div class="status-icon online">
+                                        <i class="fas fa-database"></i>
+                                    </div>
+                                    <div class="status-info">
+                                        <div class="status-label">Base de Datos</div>
+                                        <div class="status-value" id="db-status">Activa</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Métricas Principales -->
+                <div class="row">
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="metric-value" id="total-analyses">0</div>
+                            <div class="metric-label">Análisis Totales</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="analysis-trend">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-value" id="average-score">0%</div>
+                            <div class="metric-label">Precisión Promedio</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="accuracy-trend">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="metric-value" id="average-latency">0s</div>
+                            <div class="metric-label">Latencia Media</div>
+                            <div class="metric-change negative">
+                                <i class="fas fa-arrow-down"></i>
+                                <span id="latency-trend">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 col-md-6 col-sm-12">
+                        <div class="card metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="metric-value" id="fake-news-detected">0</div>
+                            <div class="metric-label">Fake News Detectadas</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span id="fake-news-trend">Cargando...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid del Dashboard -->
+                <div class="row mt-6">
+                    <div class="col-8 col-md-12">
+                        <!-- Distribución de Veredictos -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-pie"></i>
+                                    Distribución de Veredictos
+                                </h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm btn-outline" id="refresh-chart">
+                                        <i class="fas fa-sync-alt"></i> Actualizar
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container" style="height: 300px;">
+                                    <canvas id="verdictsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actividad Reciente -->
+                        <div class="card mt-6">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-clock"></i>
+                                    Análisis Recientes
+                                </h3>
+                                <div class="card-actions">
+                                    <a href="history.html" class="btn btn-sm btn-outline">
+                                        Ver Todo <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="recent-analyses" id="recent-analyses">
+                                    <div class="loading-state">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Cargando análisis recientes...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-md-12">
+                        <!-- Acciones Rápidas -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-bolt"></i>
+                                    Acciones Rápidas
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-actions">
+                                    <a href="analysis.html" class="btn btn-primary btn-lg w-100 mb-3">
+                                        <i class="fas fa-plus"></i>
+                                        Analizar Nueva Noticia
+                                    </a>
+                                    <a href="history.html" class="btn btn-outline w-100 mb-3">
+                                        <i class="fas fa-history"></i>
+                                        Ver Historial Completo
+                                    </a>
+                                    <a href="comparison.html" class="btn btn-outline w-100 mb-3">
+                                        <i class="fas fa-balance-scale"></i>
+                                        Comparar Noticias
+                                    </a>
+                                    <button class="btn btn-outline w-100" id="export-data">
+                                        <i class="fas fa-download"></i>
+                                        Exportar Datos CSV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estadísticas del Día -->
+                        <div class="card mt-6">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Hoy
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="daily-stats">
+                                    <div class="stat-row">
+                                        <span class="stat-label">Análisis Realizados:</span>
+                                        <span class="stat-value" id="today-analyses">0</span>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">Precisión Promedio:</span>
+                                        <span class="stat-value" id="today-accuracy">0%</span>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">Fake News Detectadas:</span>
+                                        <span class="stat-value" id="today-fake-news">0</span>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">Tiempo Promedio:</span>
+                                        <span class="stat-value" id="today-latency">0s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progreso de Entrenamiento -->
+                        <div class="card mt-6">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Modelo ML
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="ml-status">
+                                    <div class="ml-status-item">
+                                        <span class="ml-label">Estado:</span>
+                                        <span class="ml-value" id="ml-model-status">Verificando...</span>
+                                    </div>
+                                    <div class="ml-status-item">
+                                        <span class="ml-label">Último Entrenamiento:</span>
+                                        <span class="ml-value" id="ml-last-trained">-</span>
+                                    </div>
+                                    <div class="ml-status-item">
+                                        <span class="ml-label">Precisión Reportada:</span>
+                                        <span class="ml-value" id="ml-accuracy">-</span>
+                                    </div>
+                                    <button class="btn btn-outline w-100 mt-4" id="train-model-btn">
+                                        <i class="fas fa-robot"></i> Entrenar Modelo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Estado del Sistema -->
+    <div class="modal" id="systemStatusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Estado del Sistema</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="system-status-detailed">
+                    <div class="status-section">
+                        <h4>🔗 Conexiones Backend</h4>
+                        <div class="status-item">
+                            <span class="status-label">API Principal:</span>
+                            <span class="status-value" id="detailed-api-status">Verificando...</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Base de Datos:</span>
+                            <span class="status-value" id="detailed-db-status">Verificando...</span>
+                        </div>
+                    </div>
+                    <div class="status-section">
+                        <h4>🤖 Modelos de IA</h4>
+                        <div class="status-item">
+                            <span class="status-label">Groq LLaMA 3.1:</span>
+                            <span class="status-value" id="detailed-llm-status">Verificando...</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">ML Local (Python):</span>
+                            <span class="status-value" id="detailed-ml-status">Verificando...</span>
+                        </div>
+                    </div>
+                    <div class="status-section">
+                        <h4>📊 Rendimiento</h4>
+                        <div class="status-item">
+                            <span class="status-label">Tiempo Respuesta Promedio:</span>
+                            <span class="status-value" id="response-time">-</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Análisis en Cola:</span>
+                            <span class="status-value" id="queue-length">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="refresh-system-status">
+                    <i class="fas fa-sync-alt"></i> Actualizar Estado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Alertas -->
+    <div class="alert-system" id="alertSystem"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

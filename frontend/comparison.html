@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparar - DesinfoApp | Detector de Fake News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Épico -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>DesinfoApp</span>
+                        <span class="logo-subtitle">Detector de Fake News</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación Principal</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">
+                                <i class="fas fa-home nav-icon"></i>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analysis.html" class="nav-link">
+                                <i class="fas fa-search nav-icon"></i>
+                                <span class="nav-text">Analizar Noticia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="history.html" class="nav-link">
+                                <i class="fas fa-history nav-icon"></i>
+                                <span class="nav-text">Historial</span>
+                                <span class="nav-badge" id="history-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comparison.html" class="nav-link active">
+                                <i class="fas fa-balance-scale nav-icon"></i>
+                                <span class="nav-text">Comparar</span>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Administración</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="datasets.html" class="nav-link">
+                                <i class="fas fa-database nav-icon"></i>
+                                <span class="nav-text">Datasets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="calibration.html" class="nav-link">
+                                <i class="fas fa-sliders-h nav-icon"></i>
+                                <span class="nav-text">Calibración</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="system-status-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Estado del Sistema</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header Profesional -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <nav class="breadcrumb">
+                            <div class="breadcrumb-item">
+                                <a href="index.html" class="breadcrumb-link">Dashboard</a>
+                            </div>
+                            <div class="breadcrumb-item active">
+                                Comparar
+                            </div>
+                        </nav>
+                        <h1 class="page-title">Comparar Análisis</h1>
+                        <p class="page-subtitle">Compare múltiples análisis para identificar patrones y tendencias</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="mobile-menu-btn desktop-only">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name">Usuario</span>
+                                <span class="user-role">Analista</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenido de Comparación -->
+            <div class="content-wrapper">
+                <!-- Agregar Análisis a Comparación -->
+                <div class="card mb-6">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-plus-circle"></i>
+                            Agregar Análisis a la Comparación
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="add-comparison-grid">
+                            <div class="add-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                                <div class="method-content">
+                                    <h4>Desde Análisis Recientes</h4>
+                                    <p>Seleccione de los análisis realizados recientemente</p>
+                                    <select id="recent-analysis-select" class="form-select">
+                                        <option value="">Seleccionar análisis reciente...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="add-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <div class="method-content">
+                                    <h4>Desde Historial Completo</h4>
+                                    <p>Busque en todo el historial de análisis</p>
+                                    <button class="btn btn-outline" id="search-historical">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        Buscar en Historial
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="add-method">
+                                <div class="method-icon">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="method-content">
+                                    <h4>Nuevo Análisis</h4>
+                                    <p>Realice un nuevo análisis para comparar</p>
+                                    <a href="analysis.html" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                        Analizar Nueva Noticia
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado Vacío -->
+                <div id="comparison-empty" class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h3>No hay análisis para comparar</h3>
+                    <p>Agregue al menos dos análisis para comenzar la comparación</p>
+                    <div class="empty-actions">
+                        <a href="analysis.html" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Realizar Nuevo Análisis
+                        </a>
+                        <a href="history.html" class="btn btn-outline">
+                            <i class="fas fa-history"></i>
+                            Ver Historial Completo
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contenido de Comparación -->
+                <div id="comparison-content" style="display: none;">
+                    <!-- Estadísticas de Comparación -->
+                    <div class="card mb-6" id="comparison-stats" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-bar"></i>
+                                Resumen de la Comparación
+                            </h3>
+                            <div class="card-actions">
+                                <span class="comparison-count" id="comparison-count">0 análisis</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="comparison-stats-grid">
+                                <div class="comparison-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-average">0%</div>
+                                    <div class="stat-label">Puntaje Promedio</div>
+                                </div>
+                                <div class="comparison-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-range">0% - 0%</div>
+                                    <div class="stat-label">Rango de Puntajes</div>
+                                </div>
+                                <div class="comparison-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <div class="stat-value">
+                                        <span class="credible-count" id="stat-credible-count">0</span> /
+                                        <span class="doubtful-count" id="stat-doubtful-count">0</span> /
+                                        <span class="false-count" id="stat-false-count">0</span>
+                                    </div>
+                                    <div class="stat-label">Creíbles / Dudosas / Falsas</div>
+                                </div>
+                                <div class="comparison-stat">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="stat-value" id="stat-avg-time">0s</div>
+                                    <div class="stat-label">Tiempo Promedio</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Gráfico de Distribución -->
+                            <div class="distribution-section">
+                                <h4>Distribución de Veredictos</h4>
+                                <div class="distribution-chart">
+                                    <div class="chart-bar">
+                                        <div class="bar-segment credible" id="dist-credible" style="width: 0%">
+                                            <span class="segment-label">Creíbles</span>
+                                            <span class="segment-value">0%</span>
+                                        </div>
+                                        <div class="bar-segment doubtful" id="dist-doubtful" style="width: 0%">
+                                            <span class="segment-label">Dudosas</span>
+                                            <span class="segment-value">0%</span>
+                                        </div>
+                                        <div class="bar-segment false" id="dist-false" style="width: 0%">
+                                            <span class="segment-label">Falsas</span>
+                                            <span class="segment-value">0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid de Comparación -->
+                    <div class="card mb-6">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-th"></i>
+                                Análisis en Comparación
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-outline btn-danger" id="clear-comparison">
+                                    <i class="fas fa-trash"></i>
+                                    Limpiar Todo
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="comparison-grid" id="comparison-grid">
+                                <!-- Los análisis se cargan dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla Comparativa Detallada -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-table"></i>
+                                Vista Comparativa Detallada
+                            </h3>
+                            <div class="card-actions">
+                                <button class="btn btn-sm btn-primary" id="export-comparison">
+                                    <i class="fas fa-download"></i>
+                                    Exportar Comparación
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fuente</th>
+                                            <th>Título</th>
+                                            <th>Puntaje</th>
+                                            <th>Veredicto</th>
+                                            <th>Tiempo</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comparison-table-body">
+                                        <!-- Los datos se cargan dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Detalles -->
+    <div class="modal" id="comparison-details-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalles del Análisis</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="comparison-details-content">
+                    <!-- Los detalles se cargan dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="document.getElementById('comparison-details-modal').classList.remove('show')">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Alertas -->
+    <div class="alert-system" id="alertSystem"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/comparison.js"></script>
+</body>
+</html>

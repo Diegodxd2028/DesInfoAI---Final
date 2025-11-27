@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calibración - DesinfoApp | Detector de Fake News</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Épico -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <div class="logo-img">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span>DesinfoApp</span>
+                        <span class="logo-subtitle">Detector de Fake News</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Navegación Principal</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">
+                                <i class="fas fa-home nav-icon"></i>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analysis.html" class="nav-link">
+                                <i class="fas fa-search nav-icon"></i>
+                                <span class="nav-text">Analizar Noticia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="history.html" class="nav-link">
+                                <i class="fas fa-history nav-icon"></i>
+                                <span class="nav-text">Historial</span>
+                                <span class="nav-badge" id="history-badge">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="comparison.html" class="nav-link">
+                                <i class="fas fa-balance-scale nav-icon"></i>
+                                <span class="nav-text">Comparar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Administración</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="datasets.html" class="nav-link">
+                                <i class="fas fa-database nav-icon"></i>
+                                <span class="nav-text">Datasets</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="calibration.html" class="nav-link active">
+                                <i class="fas fa-sliders-h nav-icon"></i>
+                                <span class="nav-text">Calibración</span>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="system-status-link">
+                                <i class="fas fa-cog nav-icon"></i>
+                                <span class="nav-text">Estado del Sistema</span>
+                            </a>
+                        </li>
+                        <li class="nav-item admin-only" style="display: none;">
+                            <a href="#" class="nav-link" id="logout-admin">
+                                <i class="fas fa-sign-out-alt nav-icon"></i>
+                                <span class="nav-text">Cerrar Sesión Admin</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <!-- Header Profesional -->
+            <header class="main-header">
+                <div class="header-content">
+                    <div class="page-title-section">
+                        <nav class="breadcrumb">
+                            <div class="breadcrumb-item">
+                                <a href="index.html" class="breadcrumb-link">Dashboard</a>
+                            </div>
+                            <div class="breadcrumb-item active">
+                                Calibración
+                            </div>
+                        </nav>
+                        <h1 class="page-title">Calibración del Sistema</h1>
+                        <p class="page-subtitle">Optimice la precisión del sistema usando datasets locales</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="mobile-menu-btn desktop-only">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        
+                        <!-- Botón de logout para admin -->
+                        <button class="btn btn-outline btn-sm" id="logout-admin-btn" style="margin-right: 10px; display: none;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar Sesión
+                        </button>
+                        
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="user-info">
+                                <span class="user-name" id="admin-name">Usuario</span>
+                                <span class="user-role" id="admin-role">Administrador</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Contenido de Calibración -->
+            <div class="content-wrapper">
+                <!-- Panel de No Autenticado -->
+                <div id="not-authenticated-panel" style="display: none;">
+                    <div class="card">
+                        <div class="card-body text-center py-6">
+                            <div class="security-warning">
+                                <i class="fas fa-shield-alt fa-4x text-warning mb-4"></i>
+                                <h3 class="mb-3">Acceso Restringido</h3>
+                                <p class="text-muted mb-4">Esta sección requiere permisos de administrador.</p>
+                                <button class="btn btn-primary btn-lg" id="go-to-login">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Ir al Login de Administrador
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Calibración (solo visible para admin) -->
+                <div id="calibration-panel">
+                    <!-- Estado Actual -->
+                    <div class="row mb-6">
+                        <div class="col-4 col-md-6 col-sm-12">
+                            <div class="card metric-card">
+                                <div class="metric-icon">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <div class="metric-value" id="current-accuracy">85%</div>
+                                <div class="metric-label">Precisión Actual</div>
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-6 col-sm-12">
+                            <div class="card metric-card">
+                                <div class="metric-icon">
+                                    <i class="fas fa-sync"></i>
+                                </div>
+                                <div class="metric-value" id="calibration-count">0</div>
+                                <div class="metric-label">Calibraciones Realizadas</div>
+                            </div>
+                        </div>
+                        <div class="col-4 col-md-6 col-sm-12">
+                            <div class="card metric-card">
+                                <div class="metric-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metric-value" id="last-calibration">Nunca</div>
+                                <div class="metric-label">Última Calibración</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sistema de Alertas -->
+                    <div id="alert-container"></div>
+
+                    <div class="row">
+                        <div class="col-8 col-md-12">
+                            <!-- Ejecutar Calibración -->
+                            <div class="card mb-6">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-cogs"></i>
+                                        Ejecutar Calibración
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="calibration-info mb-6">
+                                        <h4>¿Qué hace la calibración?</h4>
+                                        <p>La calibración ajusta los puntajes del sistema comparando análisis recientes con datasets locales etiquetados, mejorando la precisión para noticias de Huancayo y contexto local.</p>
+                                        
+                                        <div class="info-grid">
+                                            <div class="info-item">
+                                                <i class="fas fa-search"></i>
+                                                <span>Analiza los últimos 50 análisis</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-database"></i>
+                                                <span>Compara con datasets locales</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-chart-line"></i>
+                                                <span>Ajusta puntajes basado en similitud</span>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fas fa-rocket"></i>
+                                                <span>Mejora precisión contextual</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="calibration-progress" id="calibration-progress" style="display: none;">
+                                        <h4>Progreso de la Calibración</h4>
+                                        <div class="progress-bar large">
+                                            <div class="progress-fill" id="calibration-progress-bar"></div>
+                                        </div>
+                                        <div class="progress-text" id="calibration-progress-text">0%</div>
+                                    </div>
+
+                                    <div class="calibration-results" id="calibration-results">
+                                        <!-- Los resultados se cargan dinámicamente -->
+                                    </div>
+
+                                    <div class="calibration-actions">
+                                        <button class="btn btn-primary btn-lg" id="run-calibration">
+                                            <i class="fas fa-play"></i>
+                                            Ejecutar Calibración
+                                        </button>
+                                        <button class="btn btn-outline" id="view-calibration-logs">
+                                            <i class="fas fa-history"></i>
+                                            Ver Historial
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Historial de Calibraciones -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-history"></i>
+                                        Historial de Calibraciones
+                                    </h3>
+                                    <div class="card-actions">
+                                        <div class="filter-group">
+                                            <button class="calibration-filter active" id="filter-all-calibration">
+                                                Todas
+                                            </button>
+                                            <button class="calibration-filter" id="filter-successful">
+                                                Exitosas
+                                            </button>
+                                            <button class="calibration-filter" id="filter-failed">
+                                                Fallidas
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="data-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Fecha y Hora</th>
+                                                    <th>Análisis Totales</th>
+                                                    <th>Calibrados</th>
+                                                    <th>Tasa</th>
+                                                    <th>Precisión</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="calibration-history-tbody">
+                                                <!-- El historial se carga dinámicamente -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4 col-md-12">
+                            <!-- Configuración de Calibración -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-sliders-h"></i>
+                                        Configuración
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <form id="calibration-settings">
+                                        <div class="form-group">
+                                            <label for="calibration-sensitivity" class="form-label">
+                                                Sensibilidad de Calibración
+                                            </label>
+                                            <input type="range" id="calibration-sensitivity" class="form-range" 
+                                                   min="1" max="100" value="50">
+                                            <div class="range-labels">
+                                                <span>Baja</span>
+                                                <span>Alta</span>
+                                            </div>
+                                            <div class="form-help">
+                                                Controla qué tan agresivo es el ajuste de puntajes
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="min-matches" class="form-label">
+                                                Mínimo de Coincidencias
+                                            </label>
+                                            <input type="number" id="min-matches" class="form-control" 
+                                                   min="1" max="10" value="1">
+                                            <div class="form-help">
+                                                Número mínimo de coincidencias para calibrar un análisis
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Dataset de Referencia</label>
+                                            <select class="form-select" id="reference-dataset">
+                                                <option value="local">Dataset Local de Huancayo</option>
+                                                <option value="general">Dataset General</option>
+                                                <option value="both">Ambos Datasets</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="auto-calibrate" class="form-check-input">
+                                                <label for="auto-calibrate" class="form-check-label">
+                                                    Calibración Automática
+                                                </label>
+                                            </div>
+                                            <div class="form-help">
+                                                Ejecutar calibración automáticamente cada 24 horas
+                                            </div>
+                                        </div>
+
+                                        <div class="form-actions">
+                                            <button type="button" class="btn btn-primary w-100" id="save-calibration-settings">
+                                                <i class="fas fa-save"></i>
+                                                Guardar Configuración
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Estadísticas de Calibración -->
+                            <div class="card mt-6">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-bar"></i>
+                                        Impacto de la Calibración
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="impact-stats">
+                                        <div class="impact-item">
+                                            <div class="impact-label">Mejora Promedio</div>
+                                            <div class="impact-value positive">+12%</div>
+                                        </div>
+                                        <div class="impact-item">
+                                            <div class="impact-label">Análisis Mejorados</div>
+                                            <div class="impact-value">78%</div>
+                                        </div>
+                                        <div class="impact-item">
+                                            <div class="impact-label">Tiempo Promedio</div>
+                                            <div class="impact-value">45s</div>
+                                        </div>
+                                        <div class="impact-item">
+                                            <div class="impact-label">Confianza</div>
+                                            <div class="impact-value">Alta</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tips de Calibración -->
+                            <div class="card mt-6">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Mejores Prácticas
+                                    </h3>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="tips-list">
+                                        <li>
+                                            <i class="fas fa-check"></i>
+                                            Ejecute después de agregar nuevos datasets
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-check"></i>
+                                            Use datasets locales para mejor precisión
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-check"></i>
+                                            Revise el historial de calibraciones
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-check"></i>
+                                            Ajuste sensibilidad según necesidades
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-check"></i>
+                                            Combine con entrenamiento de ML
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Detalles de Calibración -->
+    <div class="modal" id="calibration-details-modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalles de la Calibración</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="calibration-details-content">
+                    <!-- Los detalles se cargan dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="document.getElementById('calibration-details-modal').classList.remove('show')">
+                    Cerrar
+                </button>
+                <button class="btn btn-primary" id="export-calibration-report">
+                    <i class="fas fa-download"></i> Exportar Reporte
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Alertas -->
+    <div class="alert-system" id="alertSystem"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/calibration.js"></script>
+    
+    <script>
+        // Sistema de autenticación para calibration.html
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔐 Iniciando verificación de autenticación...');
+            
+            // Elementos de la UI
+            const notAuthenticatedPanel = document.getElementById('not-authenticated-panel');
+            const calibrationPanel = document.getElementById('calibration-panel');
+            const logoutBtn = document.getElementById('logout-admin-btn');
+            const goToLoginBtn = document.getElementById('go-to-login');
+            const adminName = document.getElementById('admin-name');
+            const adminRole = document.getElementById('admin-role');
+            
+            // Verificar autenticación
+            function checkAuthentication() {
+                const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
+                const expiry = localStorage.getItem('adminExpiry');
+                
+                // Verificar si la sesión expiró
+                if (isAuthenticated && expiry && new Date() > new Date(expiry)) {
+                    localStorage.removeItem('adminAuthenticated');
+                    localStorage.removeItem('adminRemember');
+                    localStorage.removeItem('adminExpiry');
+                    return false;
+                }
+                
+                return isAuthenticated;
+            }
+            
+            // Actualizar UI basado en autenticación
+            function updateUI() {
+                const isAuthenticated = checkAuthentication();
+                
+                console.log('🔍 Estado de autenticación:', isAuthenticated);
+                
+                if (isAuthenticated) {
+                    // Usuario autenticado - mostrar panel de calibración
+                    if (notAuthenticatedPanel) notAuthenticatedPanel.style.display = 'none';
+                    if (calibrationPanel) calibrationPanel.style.display = 'block';
+                    if (logoutBtn) logoutBtn.style.display = 'inline-block';
+                    
+                    // Actualizar información del usuario
+                    if (adminName) adminName.textContent = 'Administrador';
+                    if (adminRole) adminRole.textContent = 'Sistema';
+                    
+                    console.log('✅ Mostrando panel de calibración para admin');
+                } else {
+                    // Usuario no autenticado - mostrar panel de login
+                    if (notAuthenticatedPanel) notAuthenticatedPanel.style.display = 'block';
+                    if (calibrationPanel) calibrationPanel.style.display = 'none';
+                    if (logoutBtn) logoutBtn.style.display = 'none';
+                    
+                    console.log('🚫 Redirigiendo a login...');
+                }
+            }
+            
+            // Redirigir a login
+            function redirectToLogin() {
+                const currentPage = window.location.pathname.split('/').pop();
+                window.location.href = `login.html?redirect=${encodeURIComponent(currentPage)}`;
+            }
+            
+            // Logout
+            function handleLogout() {
+                localStorage.removeItem('adminAuthenticated');
+                localStorage.removeItem('adminRemember');
+                localStorage.removeItem('adminExpiry');
+                
+                // Mostrar mensaje
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-info';
+                alertDiv.innerHTML = `
+                    <div class="alert-content">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Sesión de administrador cerrada</span>
+                        <button class="alert-close" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                const alertSystem = document.getElementById('alertSystem');
+                if (alertSystem) {
+                    alertSystem.appendChild(alertDiv);
+                }
+                
+                // Actualizar UI
+                updateUI();
+                
+                // Redirigir después de un tiempo
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+            
+            // Event Listeners
+            if (goToLoginBtn) {
+                goToLoginBtn.addEventListener('click', redirectToLogin);
+            }
+            
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+            
+            // También en el sidebar
+            const sidebarLogout = document.getElementById('logout-admin');
+            if (sidebarLogout) {
+                sidebarLogout.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleLogout();
+                });
+            }
+            
+            // Verificar autenticación inicial
+            if (!checkAuthentication()) {
+                console.log('🔒 Usuario no autenticado, redirigiendo...');
+                // Pequeño delay para mostrar el mensaje
+                setTimeout(redirectToLogin, 1000);
+            } else {
+                updateUI();
+            }
+            
+            // También verificar cuando se carga auth.js
+            if (window.authSystem) {
+                console.log('✅ authSystem detectado');
+                if (!window.authSystem.isAdminAuthenticated()) {
+                    redirectToLogin();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

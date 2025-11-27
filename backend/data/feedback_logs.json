@@ -1,0 +1,47 @@
+[
+  {
+    "analysis_id": 1763970695230,
+    "original_score": 86,
+    "correct_score": 100,
+    "original_verdict": "verdadera",
+    "correct_verdict": "verdadera",
+    "user_feedback": "user_corrected_analysis",
+    "timestamp": "2025-11-24T07:52:10.850Z"
+  },
+  {
+    "analysis_id": 1763971096190,
+    "original_score": 85,
+    "correct_score": 85,
+    "original_verdict": "verdadera",
+    "correct_verdict": "verdadera",
+    "user_feedback": "analysis_correct",
+    "timestamp": "2025-11-24T07:58:30.542Z"
+  },
+  {
+    "analysis_id": 1763971096190,
+    "original_score": 85,
+    "correct_score": 100,
+    "original_verdict": "verdadera",
+    "correct_verdict": "verdadera",
+    "user_feedback": "la noticia es 100% real",
+    "timestamp": "2025-11-24T07:59:02.336Z"
+  },
+  {
+    "analysis_id": 1763971423025,
+    "original_score": 33,
+    "correct_score": 50,
+    "original_verdict": "requiere_verificacion",
+    "correct_verdict": "falsa",
+    "user_feedback": "user_corrected_analysis",
+    "timestamp": "2025-11-24T08:04:06.310Z"
+  },
+  {
+    "analysis_id": 1763973179588,
+    "original_score": 44,
+    "correct_score": 50,
+    "original_verdict": "falsa",
+    "correct_verdict": "falsa",
+    "user_feedback": "user_corrected_analysis",
+    "timestamp": "2025-11-24T08:33:16.172Z"
+  }
+]
